@@ -39,7 +39,7 @@ login_response_schema = {
                         "phone": {"type": "string"},
                         "username": {"type": "string"},
 
-                        # 👇 FIXED (no date-time)
+                        
                         "created_at": {"type": ["string", "number"]},
                         "updated_at": {"type": ["string", "number"]},
                         "expires_in": {"type": ["string", "number"]}
@@ -84,7 +84,7 @@ register_request_schema = {
     "additionalProperties": False
 }
 
-# ✅ SUCCESS (201)
+
 register_success_schema = {
     "type": "object",
     "required": ["status", "message", "status_code"],

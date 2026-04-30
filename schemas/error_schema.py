@@ -26,7 +26,7 @@ validation_error_schema = {
         "status_code": {"type": "number"},
         "message": {"type": "string"},
 
-        # 👇 FIXED STRUCTURE
+        
         "error": {
             "type": "object",
             "additionalProperties": {"type": "string"}
