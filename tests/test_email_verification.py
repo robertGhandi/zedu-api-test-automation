@@ -1,53 +1,70 @@
-import os
-
 import requests
 from utils.data_factory import generate_user
 from utils.negative_factory import generate_unregistered_email
-from dotenv import load_dotenv
+from utils.validators import validate_schema
 
-load_dotenv()
-# ==============================
-# 🟢 EMAIL VERIFICATION REQUEST
-# ==============================
-base_url = os.getenv("BASE_URL")
+from schemas.email_schema import (
+    email_request_success_schema,
+    email_request_400_schema,
+    email_request_422_schema
+)
 
+
+# ==============================
+# 🟢 EMAIL VERIFICATION REQUEST (VALID)
+# ==============================
 def test_email_verification_valid(base_url):
     user = generate_user()
 
+    # Register user first
     requests.post(f"{base_url}/auth/register", json=user)
 
     response = requests.post(
-        f"{base_url}/auth/email/verify",
+        f"{base_url}/auth/email-request",
         json={"email": user["email"]}
     )
 
     body = response.json()
 
     assert response.status_code in [200, 201]
-    assert "message" in body
+    validate_schema(body, email_request_success_schema)
+
+    # explicit check
+    assert isinstance(body["message"], str)
 
 
 # ==============================
 # 🔴 EMAIL VERIFICATION (UNREGISTERED)
 # ==============================
-
 def test_email_verification_unregistered(base_url):
     response = requests.post(
-        f"{base_url}/auth/email/verify",
+        f"{base_url}/auth/email-request",
         json={"email": generate_unregistered_email()}
     )
 
+    body = response.json()
+
     assert response.status_code in [400, 404]
+
+    
+    validate_schema(body, email_request_400_schema)
+    
 
 
 # ==============================
 # 🔴 EMAIL VERIFICATION (INVALID FORMAT)
 # ==============================
-
 def test_email_verification_invalid_format(base_url):
     response = requests.post(
-        f"{base_url}/auth/email/verify",
+        f"{base_url}/auth/email-request",
         json={"email": "invalid-email"}
     )
 
+    body = response.json()
+
     assert response.status_code in [400, 422]
+
+    if response.status_code == 400:
+        validate_schema(body, email_request_400_schema)
+    else:
+        validate_schema(body, email_request_422_schema)

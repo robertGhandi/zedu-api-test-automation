@@ -1,37 +1,45 @@
 import requests
-import os
+from utils.validators import validate_schema
 
-from dotenv import load_dotenv
-load_dotenv()
-
-BASE_URL = os.getenv("BASE_URL")
+from schemas.error_schema import error_401_schema
+from schemas.onboarding_schema import onboarding_success_schema
 
 
-def test_get_onboarding_status_success(auth_context):
+# ==============================
+# 🟢 ONBOARDING STATUS (SUCCESS)
+# ==============================
+def test_get_onboarding_status_success(base_url, auth_context):
     response = requests.get(
-        f"{BASE_URL}/auth/onboard-status",
+        f"{base_url}/auth/onboard-status",
         headers=auth_context["headers"]
     )
 
     body = response.json()
 
     assert response.status_code == 200
-    assert "data" in body
-    assert isinstance(body["data"], dict)
+    validate_schema(body, onboarding_success_schema)
+
+    
 
 
-def test_get_onboarding_status_no_token():
-    response = requests.get(f"{BASE_URL}/auth/onboard-status")
+# ==============================
+# 🔴 NO TOKEN
+# ==============================
+def test_get_onboarding_status_no_token(base_url):
+    response = requests.get(f"{base_url}/auth/onboard-status")
 
     body = response.json()
 
     assert response.status_code in [401, 403]
-    assert body["status"] == "error"
+    validate_schema(body, error_401_schema)
 
 
-def test_get_onboarding_status_invalid_token():
+# ==============================
+# 🔴 INVALID TOKEN
+# ==============================
+def test_get_onboarding_status_invalid_token(base_url):
     response = requests.get(
-        f"{BASE_URL}/auth/onboard-status",
+        f"{base_url}/auth/onboard-status",
         headers={
             "Authorization": "Bearer invalid_token",
             "Content-Type": "application/json"
@@ -41,12 +49,15 @@ def test_get_onboarding_status_invalid_token():
     body = response.json()
 
     assert response.status_code in [401, 403]
-    assert body["status"] == "error"
+    validate_schema(body, error_401_schema)
 
 
-def test_get_onboarding_status_malformed_token():
+# ==============================
+# 🔴 MALFORMED TOKEN
+# ==============================
+def test_get_onboarding_status_malformed_token(base_url):
     response = requests.get(
-        f"{BASE_URL}/auth/onboard-status",
+        f"{base_url}/auth/onboard-status",
         headers={
             "Authorization": "Bearer malformed.token",
             "Content-Type": "application/json"
@@ -56,4 +67,4 @@ def test_get_onboarding_status_malformed_token():
     body = response.json()
 
     assert response.status_code in [401, 403]
-    assert body["status"] == "error"
+    validate_schema(body, error_401_schema)

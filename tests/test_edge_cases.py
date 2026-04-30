@@ -1,33 +1,51 @@
 import requests
-import os
 from utils.data_factory import generate_user
-from dotenv import load_dotenv
-load_dotenv()
+from utils.validators import validate_schema
 
-BASE_URL = os.getenv("BASE_URL")
+from schemas.error_schema import error_400_schema, validation_error_schema
 
 
-def test_register_empty_payload():
-    response = requests.post(f"{BASE_URL}/auth/register", json={})
+# =========================
+# ⚠️ EDGE — EMPTY PAYLOAD (REGISTER)
+# =========================
+def test_register_empty_payload(base_url):
+    response = requests.post(f"{base_url}/auth/register", json={})
 
     body = response.json()
 
     assert response.status_code in [400, 422]
-    assert body["status"] == "error"
+
+    if response.status_code == 400:
+        validate_schema(body, error_400_schema)
+    else:
+        validate_schema(body, validation_error_schema)
 
 
-def test_register_long_username():
+# =========================
+# ⚠️ EDGE — VERY LONG USERNAME
+# =========================
+def test_register_long_username(base_url):
     user = generate_user()
     user["username"] = "x" * 300
 
-    response = requests.post(f"{BASE_URL}/auth/register", json=user)
+    response = requests.post(f"{base_url}/auth/register", json=user)
+
+    body = response.json()
 
     assert response.status_code in [400, 422]
 
+    if response.status_code == 400:
+        validate_schema(body, error_400_schema)
+    else:
+        validate_schema(body, validation_error_schema)
 
-def test_login_sql_injection():
+
+# =========================
+# ⚠️ EDGE — SQL INJECTION LOGIN
+# =========================
+def test_login_sql_injection(base_url):
     response = requests.post(
-        f"{BASE_URL}/auth/login",
+        f"{base_url}/auth/login",
         json={
             "email": "' OR 1=1 --",
             "password": "' OR 1=1 --"
@@ -37,4 +55,47 @@ def test_login_sql_injection():
     body = response.json()
 
     assert response.status_code in [400, 401]
-    assert body["status"] == "error"
+
+    # Login error schema
+    assert "message" in body
+
+
+# =========================
+# ⚠️ EDGE — VERY LONG EMAIL
+# =========================
+def test_register_very_long_email(base_url):
+    user = generate_user()
+    user["email"] = "a" * 300 + "@mail.com"
+
+    response = requests.post(f"{base_url}/auth/register", json=user)
+
+    body = response.json()
+
+    assert response.status_code in [400, 422]
+
+    if response.status_code == 400:
+        validate_schema(body, error_400_schema)
+    else:
+        validate_schema(body, validation_error_schema)
+
+
+# =========================
+# ⚠️ EDGE — SPECIAL CHARACTERS IN PASSWORD
+# =========================
+def test_register_special_characters_password(base_url):
+    user = generate_user()
+    user["password"] = "@@@###$$$%%%^^^"
+
+    response = requests.post(f"{base_url}/auth/register", json=user)
+
+    body = response.json()
+
+    assert response.status_code in [400, 422, 201]
+
+    # Some APIs allow it — handle safely
+    if response.status_code == 201:
+        assert "status" in body
+    elif response.status_code == 400:
+        validate_schema(body, error_400_schema)
+    else:
+        validate_schema(body, validation_error_schema)
