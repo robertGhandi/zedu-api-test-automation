@@ -162,6 +162,7 @@ project/
 git clone https://github.com/robertGhandi/zedu-api-test-automation.git
 cd zedu-api-test-automation
 
+ps - git should be installed, VS code or any IDE
 ---
 
 ## 2. Create Virtual Environment
