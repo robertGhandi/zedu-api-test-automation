@@ -1,10 +1,14 @@
+import os
+
 import requests
 from utils.data_factory import generate_user
 from utils.negative_factory import generate_unregistered_email
 from utils.validators import validate_schema
+from dotenv import load_dotenv
 
 from schemas.auth_schema import magic_link_success_schema
 from schemas.error_schema import error_400_schema, validation_error_schema
+load_dotenv()
 
 TIMEOUT = 10
 
@@ -60,7 +64,7 @@ def test_magic_link_unregistered_email(base_url):
 def test_magic_link_invalid_email_format(base_url):
     response = requests.post(
         f"{base_url}/auth/magick-link",
-        json={"email": "invalid-email"},
+        json={"email": os.getenv("INVALID_EMAIL")},
         timeout=TIMEOUT
     )
 
