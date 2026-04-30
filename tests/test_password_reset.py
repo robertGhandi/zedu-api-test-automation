@@ -1,3 +1,6 @@
+import os
+
+from dotenv import load_dotenv
 import requests
 from utils.data_factory import generate_user
 from utils.negative_factory import generate_unregistered_email
@@ -8,6 +11,7 @@ from schemas.password_schema import (
     password_reset_400_schema,
     password_reset_422_schema
 )
+load_dotenv()
 
 TIMEOUT = 10
 
@@ -64,7 +68,7 @@ def test_password_reset_unregistered_email(base_url):
 def test_password_reset_invalid_email(base_url):
     response = requests.post(
         f"{base_url}/auth/password-reset",
-        json={"email": "invalid-email"},
+        json={"email": os.getenv("INVALID_EMAIL")},
         timeout=TIMEOUT
     )
 
