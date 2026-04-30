@@ -5,6 +5,8 @@ from utils.validators import validate_schema
 from schemas.auth_schema import register_success_schema
 from schemas.error_schema import error_400_schema, validation_error_schema
 
+TIMEOUT = 10
+
 
 # =========================
 # ✅ REGISTER SUCCESS
@@ -14,7 +16,8 @@ def test_register_success(base_url):
 
     response = requests.post(
         f"{base_url}/auth/register",
-        json=user
+        json=user,
+        timeout=TIMEOUT
     )
 
     body = response.json()
@@ -22,8 +25,9 @@ def test_register_success(base_url):
     assert response.status_code == 201
     validate_schema(body, register_success_schema)
 
-    # Explicit field validation (meets criteria)
+    # Explicit validation (strong assertions)
     assert body["status"] == "success"
+    assert body["status_code"] == 201
     assert isinstance(body["message"], str)
 
 
@@ -36,7 +40,8 @@ def test_register_missing_email(base_url):
 
     response = requests.post(
         f"{base_url}/auth/register",
-        json=user
+        json=user,
+        timeout=TIMEOUT
     )
 
     body = response.json()
@@ -58,7 +63,8 @@ def test_register_invalid_email(base_url):
 
     response = requests.post(
         f"{base_url}/auth/register",
-        json=user
+        json=user,
+        timeout=TIMEOUT
     )
 
     body = response.json()
@@ -77,22 +83,31 @@ def test_register_invalid_email(base_url):
 def test_register_duplicate_email(base_url):
     user = generate_user()
 
-    requests.post(f"{base_url}/auth/register", json=user)
+    # First registration
+    first = requests.post(
+        f"{base_url}/auth/register",
+        json=user,
+        timeout=TIMEOUT
+    )
+    assert first.status_code == 201
 
+    # Duplicate attempt
     response = requests.post(
         f"{base_url}/auth/register",
-        json=user
+        json=user,
+        timeout=TIMEOUT
     )
 
     body = response.json()
 
     assert response.status_code in [400, 409]
 
-    # Handle both cases safely
     if response.status_code == 400:
         validate_schema(body, error_400_schema)
-    elif response.status_code == 409:
+    else:
+        # Stronger validation for 409
         assert "message" in body
+        assert isinstance(body["message"], str)
 
 
 # =========================
@@ -101,7 +116,8 @@ def test_register_duplicate_email(base_url):
 def test_register_empty_payload(base_url):
     response = requests.post(
         f"{base_url}/auth/register",
-        json={}
+        json={},
+        timeout=TIMEOUT
     )
 
     body = response.json()

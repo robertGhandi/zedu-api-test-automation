@@ -3,7 +3,7 @@ from utils.token_factory import generate_invalid_token, generate_malformed_token
 from utils.validators import validate_schema
 
 from schemas.audit_schema import audit_logs_schema
-from schemas.error_schema import error_401_schema
+from schemas.error_schema import error_401_schema, error_status_403_schema
 
 
 # =========================
@@ -12,7 +12,8 @@ from schemas.error_schema import error_401_schema
 def test_get_audit_logs_success(base_url, auth_context):
     response = requests.get(
         f"{base_url}/users/{auth_context['user_id']}/login-audit",
-        headers=auth_context["headers"]
+        headers=auth_context["headers"],
+        timeout=10
     )
 
     body = response.json()
@@ -21,7 +22,7 @@ def test_get_audit_logs_success(base_url, auth_context):
         validate_schema(body, audit_logs_schema)
         assert isinstance(body["data"], list)
     else:
-        # fallback if endpoint returns 404
+        
         assert response.status_code == 404
 
 
@@ -30,14 +31,17 @@ def test_get_audit_logs_success(base_url, auth_context):
 # =========================
 def test_get_audit_logs_no_token(base_url, auth_context):
     response = requests.get(
-        f"{base_url}/users/{auth_context['user_id']}/login-audit"
+        f"{base_url}/users/{auth_context['user_id']}/login-audit", timeout=10
     )
 
     body = response.json()
 
     assert response.status_code in [401, 403]
-    validate_schema(body, error_401_schema)
-
+    
+    if response.status_code == 401:
+        validate_schema(body, error_401_schema)
+    else:
+        validate_schema(body, error_status_403_schema) 
 
 # =========================
 # ❌ INVALID TOKEN
@@ -50,13 +54,17 @@ def test_get_audit_logs_invalid_token(base_url, auth_context):
         headers={
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json"
-        }
+        },
+        timeout=10
     )
 
     body = response.json()
 
     assert response.status_code in [401, 403]
-    validate_schema(body, error_401_schema)
+    if response.status_code == 401:
+        validate_schema(body, error_401_schema)
+    else:
+        validate_schema(body, error_status_403_schema)  # Assuming same schema for 403 for simplicity
 
 
 # =========================
@@ -70,13 +78,18 @@ def test_get_audit_logs_malformed_token(base_url, auth_context):
         headers={
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json"
-        }
+        },
+        timeout=10
     )
 
     body = response.json()
 
     assert response.status_code in [401, 403]
-    validate_schema(body, error_401_schema)
+    
+    if response.status_code == 401:
+        validate_schema(body, error_401_schema)
+    else:
+        validate_schema(body, error_status_403_schema)  # Assuming same schema for 403 for simplicity
 
 
 # =========================
@@ -90,7 +103,8 @@ def test_audit_logs_after_multiple_logins(base_url, auth_user):
             json={
                 "email": auth_user["email"],
                 "password": auth_user["password"]
-            }
+            },
+            timeout=10
         )
 
     # login again
@@ -109,7 +123,8 @@ def test_audit_logs_after_multiple_logins(base_url, auth_user):
         headers={
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json"
-        }
+        },
+        timeout=10
     )
 
     body = response.json()

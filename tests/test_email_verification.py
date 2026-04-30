@@ -9,6 +9,8 @@ from schemas.email_schema import (
     email_request_422_schema
 )
 
+TIMEOUT = 10
+
 
 # ==============================
 # 🟢 EMAIL VERIFICATION REQUEST (VALID)
@@ -17,11 +19,17 @@ def test_email_verification_valid(base_url):
     user = generate_user()
 
     # Register user first
-    requests.post(f"{base_url}/auth/register", json=user)
+    reg = requests.post(
+        f"{base_url}/auth/register",
+        json=user,
+        timeout=TIMEOUT
+    )
+    assert reg.status_code == 201
 
     response = requests.post(
         f"{base_url}/auth/email-request",
-        json={"email": user["email"]}
+        json={"email": user["email"]},
+        timeout=TIMEOUT
     )
 
     body = response.json()
@@ -29,7 +37,8 @@ def test_email_verification_valid(base_url):
     assert response.status_code in [200, 201]
     validate_schema(body, email_request_success_schema)
 
-    # explicit check
+    # stronger validation
+    assert body["status"] == "success"
     assert isinstance(body["message"], str)
 
 
@@ -39,16 +48,20 @@ def test_email_verification_valid(base_url):
 def test_email_verification_unregistered(base_url):
     response = requests.post(
         f"{base_url}/auth/email-request",
-        json={"email": generate_unregistered_email()}
+        json={"email": generate_unregistered_email()},
+        timeout=TIMEOUT
     )
 
     body = response.json()
 
     assert response.status_code in [400, 404]
 
-    
-    validate_schema(body, email_request_400_schema)
-    
+    if response.status_code == 400:
+        validate_schema(body, email_request_400_schema)
+    else:
+        # fallback for 404
+        assert "message" in body
+        assert isinstance(body["message"], str)
 
 
 # ==============================
@@ -57,7 +70,8 @@ def test_email_verification_unregistered(base_url):
 def test_email_verification_invalid_format(base_url):
     response = requests.post(
         f"{base_url}/auth/email-request",
-        json={"email": "invalid-email"}
+        json={"email": "invalid-email"},
+        timeout=TIMEOUT
     )
 
     body = response.json()

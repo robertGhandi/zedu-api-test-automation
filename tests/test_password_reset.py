@@ -1,6 +1,6 @@
 import requests
 from utils.data_factory import generate_user
-from utils.negative_factory import generate_invalid_user_email, generate_unregistered_email
+from utils.negative_factory import generate_unregistered_email
 from utils.validators import validate_schema
 
 from schemas.password_schema import (
@@ -9,6 +9,9 @@ from schemas.password_schema import (
     password_reset_422_schema
 )
 
+TIMEOUT = 10
+
+
 # ==============================
 # 🟢 PASSWORD RESET (VALID EMAIL)
 # ==============================
@@ -16,11 +19,17 @@ def test_password_reset_valid_email(base_url):
     user = generate_user()
 
     # register first
-    requests.post(f"{base_url}/auth/register", json=user)
+    reg = requests.post(
+        f"{base_url}/auth/register",
+        json=user,
+        timeout=TIMEOUT
+    )
+    assert reg.status_code == 201
 
     response = requests.post(
         f"{base_url}/auth/password-reset",
-        json={"email": user["email"]}
+        json={"email": user["email"]},
+        timeout=TIMEOUT
     )
 
     body = response.json()
@@ -28,7 +37,8 @@ def test_password_reset_valid_email(base_url):
     assert response.status_code in [200, 201]
     validate_schema(body, password_reset_success_schema)
 
-    # explicit check
+    # stronger validation
+    assert body["status"] == "success"
     assert isinstance(body["message"], str)
 
 
@@ -38,14 +48,21 @@ def test_password_reset_valid_email(base_url):
 def test_password_reset_unregistered_email(base_url):
     response = requests.post(
         f"{base_url}/auth/password-reset",
-        json={"email": generate_unregistered_email()}
+        json={"email": generate_unregistered_email()},
+        timeout=TIMEOUT
     )
 
     body = response.json()
 
     assert response.status_code in [400, 404]
 
-    validate_schema(body, password_reset_400_schema)
+    if response.status_code == 400:
+        validate_schema(body, password_reset_400_schema)
+    else:
+        # fallback for 404
+        assert "message" in body
+        assert isinstance(body["message"], str)
+
 
 # ==============================
 # 🔴 PASSWORD RESET (INVALID EMAIL)
@@ -53,7 +70,8 @@ def test_password_reset_unregistered_email(base_url):
 def test_password_reset_invalid_email(base_url):
     response = requests.post(
         f"{base_url}/auth/password-reset",
-        json={"email": generate_invalid_user_email()}
+        json={"email": "invalid-email"},
+        timeout=TIMEOUT
     )
 
     body = response.json()

@@ -25,7 +25,8 @@ def test_login_success(base_url):
         json={
             "email": user["email"],
             "password": user["password"]
-        }
+        },
+        timeout=10
     )
 
     body = response.json()
