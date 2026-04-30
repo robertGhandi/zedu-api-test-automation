@@ -11,7 +11,7 @@ audit_logs_schema = {
                 "type": "object",
                 "required": [
                     "id",
-                    "userId",
+                    "user_id",
                     "access_token_id",
                     "login_at",
                     "ip_address",
@@ -20,14 +20,16 @@ audit_logs_schema = {
                 ],
                 "properties": {
                     "id": {"type": "string"},
-                    "userId": {"type": "string"},
+                    "user_id": {"type": "string"},
                     "access_token_id": {"type": "string"},
                     "login_at": {"type": "string"},
                     "ip_address": {"type": "string"},
                     "location": {"type": "string"},
                     "device": {"type": "string"},
-                    "created_at": {"type": "string"}
-                }
+                    "created_at": {"type": "string"},
+                    "is_live": {"type": "boolean"}
+                },
+                "additionalProperties": True
             }
         }
     }

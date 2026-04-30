@@ -11,10 +11,10 @@ login_response_schema = {
             "required": [
                 "user",
                 "access_token",
-                "access_token_expires_in",
                 "notification_token"
             ],
             "properties": {
+
                 "user": {
                     "type": "object",
                     "required": [
@@ -26,39 +26,40 @@ login_response_schema = {
                         "is_onboarded",
                         "email",
                         "phone",
-                        "username",
-                        "created_at",
-                        "updated_at",
-                        "expires_at"
+                        "username"
                     ],
                     "properties": {
                         "id": {"type": "string"},
                         "first_name": {"type": "string"},
                         "fullname": {"type": "string"},
                         "last_name": {"type": "string"},
-
                         "is_verified": {"type": "boolean"},
                         "is_onboarded": {"type": "boolean"},
-
                         "email": {"type": "string"},
                         "phone": {"type": "string"},
                         "username": {"type": "string"},
 
-                        "created_at": {"type": "string", "format": "date-time"},
-                        "updated_at": {"type": "string", "format": "date-time"},
-                        "expires_at": {"type": "string", "format": "date-time"}
-                    }
+                        # 👇 FIXED (no date-time)
+                        "created_at": {"type": ["string", "number"]},
+                        "updated_at": {"type": ["string", "number"]},
+                        "expires_in": {"type": ["string", "number"]}
+                    },
+                    "additionalProperties": True
                 },
 
                 "access_token": {"type": "string"},
+
+                # 👇 FIXED (no date-time)
                 "access_token_expires_in": {
-                    "type": "string",
-                    "format": "date-time"
+                    "type": ["string", "number"]
                 },
+
                 "notification_token": {"type": "string"}
-            }
+            },
+            "additionalProperties": True
         }
-    }
+    },
+    "additionalProperties": True
 }
 
 
@@ -97,10 +98,12 @@ register_success_schema = {
 
 magic_link_success_schema = {
     "type": "object",
-    "required": ["status", "message", "statusCode"],
+    "required": ["status", "message", "status_code"],
     "properties": {
         "status": {"type": "string"},
         "message": {"type": "string"},
-        "statusCode": {"type": "number"}
-    }
+        "status_code": {"type": "number"},
+        "data": {"type": ["string", "object", "null"]}
+    },
+    "additionalProperties": True
 }

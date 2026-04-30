@@ -1,32 +1,33 @@
-error_400_schema = {
+password_reset_success_schema = {
+    "type": "object",
+    "required": ["status", "message", "status_code"],
+    "properties": {
+        "status": {"type": "string"},
+        "message": {"type": "string"},
+        "status_code": {"type": "number"},
+        "data": {"type": ["string", "object", "null"]}
+    },
+    "additionalProperties": True
+}
+
+password_reset_400_schema = {
     "type": "object",
     "required": ["status", "status_code", "message"],
     "properties": {
         "status": {"type": "string"},
         "status_code": {"type": "number"},
         "message": {"type": "string"}
-    }
+    },
+    "additionalProperties": True
 }
 
-error_401_schema = {
-    "type": "object",
-    "required": ["status", "status_code", "message"],
-    "properties": {
-        "status": {"type": "string"},
-        "status_code": {"type": "number"},
-        "message": {"type": "string"}
-    }
-}
-
-validation_error_schema = {
+password_reset_422_schema = {
     "type": "object",
     "required": ["status", "status_code", "message", "error"],
     "properties": {
         "status": {"type": "string"},
         "status_code": {"type": "number"},
         "message": {"type": "string"},
-
-        # 👇 FIXED STRUCTURE
         "error": {
             "type": "object",
             "additionalProperties": {"type": "string"}
@@ -34,17 +35,3 @@ validation_error_schema = {
     },
     "additionalProperties": True
 }
-
-error_status_403_schema = {
-    "type": "object",
-    "required": ["status", "status_code", "message"],
-    "properties": {
-        "status": {"type": "string"},
-        "status_code": {"type": "number"},
-        "message": {"type": "string"}
-    },
-    "additionalProperties": True
-}
-
-
-
