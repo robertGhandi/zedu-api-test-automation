@@ -49,6 +49,7 @@ project/
 │   ├── test_edge_cases.py
 │
 ├── utils/
+│   ├── auth.py
 │   ├── data_factory.py
 │   ├── negative_factory.py
 │   ├── token_factory.py
@@ -59,10 +60,13 @@ project/
 │   ├── user_schema.py
 │   ├── audit_schema.py
 │   ├── password_schema.py
+│   ├── email_schema.py
 │   ├── error_schema.py
+│   ├── onboarding_schema.py
 │
 ├── conftest.py
 ├── requirements.txt
+├── .env
 ├── .env.example
 └── README.md
 
