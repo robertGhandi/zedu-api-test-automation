@@ -1,7 +1,12 @@
+import os
+
 import requests
 from utils.data_factory import generate_user
 from utils.negative_factory import generate_unregistered_email
 from utils.validators import validate_schema
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from schemas.auth_schema import login_response_schema
 from schemas.error_schema import (
@@ -43,7 +48,7 @@ def test_login_unregistered_email(base_url):
         f"{base_url}/auth/login",
         json={
             "email": generate_unregistered_email(),
-            "password": "Password123!"
+            "password": os.getenv("DEFAULT_PASSWORD")
         },
         timeout=10
     )
@@ -70,7 +75,7 @@ def test_login_wrong_password(base_url):
         f"{base_url}/auth/login",
         json={
             "email": user["email"],
-            "password": "WrongPassword123!"
+            "password": os.getenv("WRONG_PASSWORD")
         },
         timeout=10
     )
