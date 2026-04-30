@@ -11,9 +11,8 @@ from schemas.error_schema import (
 )
 
 
-# =========================
-# ✅ SUCCESS LOGIN TEST
-# =========================
+# Verify successful login with valid registered user credentials
+
 def test_login_success(base_url):
     user = generate_user()
 
@@ -37,9 +36,8 @@ def test_login_success(base_url):
     assert isinstance(body["data"]["access_token"], str)
 
 
-# =========================
-# ❌ UNREGISTERED EMAIL
-# =========================
+# Attempt login with an unregistered email address (should fail with validation/auth error)
+
 def test_login_unregistered_email(base_url):
     response = requests.post(
         f"{base_url}/auth/login",
@@ -62,9 +60,8 @@ def test_login_unregistered_email(base_url):
         validate_schema(body, validation_error_schema)
 
 
-# =========================
-# ❌ WRONG PASSWORD
-# =========================
+# Attempt login with correct email but incorrect password (should return authentication error)
+
 def test_login_wrong_password(base_url):
     user = generate_user()
     requests.post(f"{base_url}/auth/register", json=user)
@@ -87,10 +84,8 @@ def test_login_wrong_password(base_url):
     else:
         validate_schema(body, error_401_schema)
 
+# Attempt login request with missing email field (should trigger validation error)
 
-# =========================
-# ❌ MISSING EMAIL
-# =========================
 def test_login_missing_email(base_url):
     user = generate_user()
 
@@ -111,10 +106,8 @@ def test_login_missing_email(base_url):
     else:
         validate_schema(body, validation_error_schema)
 
+# Attempt login request with missing password field (should trigger validation error)
 
-# =========================
-# ❌ MISSING PASSWORD
-# =========================
 def test_login_missing_password(base_url):
     user = generate_user()
 
@@ -136,9 +129,8 @@ def test_login_missing_password(base_url):
         validate_schema(body, validation_error_schema)
 
 
-# =========================
-# ❌ EMPTY PAYLOAD
-# =========================
+# Attempt login with empty request payload (edge case — should fail validation)
+
 def test_login_empty_payload(base_url):
     response = requests.post(f"{base_url}/auth/login", json={}, timeout=10)
 

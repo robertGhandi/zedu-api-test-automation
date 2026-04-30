@@ -11,10 +11,8 @@ from schemas.password_schema import (
 
 TIMEOUT = 10
 
+# Verify password reset request is successful for a registered email
 
-# ==============================
-# 🟢 PASSWORD RESET (VALID EMAIL)
-# ==============================
 def test_password_reset_valid_email(base_url):
     user = generate_user()
 
@@ -37,14 +35,12 @@ def test_password_reset_valid_email(base_url):
     assert response.status_code in [200, 201]
     validate_schema(body, password_reset_success_schema)
 
-    # stronger validation
     assert body["status"] == "success"
     assert isinstance(body["message"], str)
 
 
-# ==============================
-# 🔴 PASSWORD RESET (UNREGISTERED EMAIL)
-# ==============================
+# Attempt password reset request with an unregistered email (should return error response)
+
 def test_password_reset_unregistered_email(base_url):
     response = requests.post(
         f"{base_url}/auth/password-reset",
@@ -59,14 +55,12 @@ def test_password_reset_unregistered_email(base_url):
     if response.status_code == 400:
         validate_schema(body, password_reset_400_schema)
     else:
-        # fallback for 404
         assert "message" in body
         assert isinstance(body["message"], str)
 
 
-# ==============================
-# 🔴 PASSWORD RESET (INVALID EMAIL)
-# ==============================
+# Attempt password reset request with invalid email format (should trigger validation error)
+
 def test_password_reset_invalid_email(base_url):
     response = requests.post(
         f"{base_url}/auth/password-reset",

@@ -8,10 +8,8 @@ from schemas.error_schema import error_400_schema, validation_error_schema
 
 TIMEOUT = 10
 
+# Verify magic link request is successful for a registered email
 
-# ==============================
-# 🟢 MAGIC LINK (VALID EMAIL)
-# ==============================
 def test_magic_link_valid_email(base_url):
     user = generate_user()
 
@@ -34,14 +32,11 @@ def test_magic_link_valid_email(base_url):
     assert response.status_code in [200, 201]
     validate_schema(body, magic_link_success_schema)
 
-    # stronger validation
     assert body["status"] == "success"
     assert isinstance(body["message"], str)
 
+# Attempt magic link request with an unregistered email (should return error response)
 
-# ==============================
-# 🔴 MAGIC LINK (UNREGISTERED EMAIL)
-# ==============================
 def test_magic_link_unregistered_email(base_url):
     response = requests.post(
         f"{base_url}/auth/magick-link",
@@ -56,14 +51,12 @@ def test_magic_link_unregistered_email(base_url):
     if response.status_code == 400:
         validate_schema(body, error_400_schema)
     else:
-        # fallback for 404
         assert "message" in body
         assert isinstance(body["message"], str)
 
 
-# ==============================
-# 🔴 MAGIC LINK (INVALID EMAIL FORMAT)
-# ==============================
+# Attempt magic link request with invalid email format (should trigger validation error)
+
 def test_magic_link_invalid_email_format(base_url):
     response = requests.post(
         f"{base_url}/auth/magick-link",
@@ -81,9 +74,8 @@ def test_magic_link_invalid_email_format(base_url):
         validate_schema(body, validation_error_schema)
 
 
-# ==============================
-# 🔴 MAGIC LINK (MISSING EMAIL)
-# ==============================
+# Attempt magic link request with missing email field (should fail validation)
+
 def test_magic_link_missing_email(base_url):
     response = requests.post(
         f"{base_url}/auth/magick-link",

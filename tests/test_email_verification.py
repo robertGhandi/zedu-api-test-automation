@@ -12,9 +12,8 @@ from schemas.email_schema import (
 TIMEOUT = 10
 
 
-# ==============================
-# 🟢 EMAIL VERIFICATION REQUEST (VALID)
-# ==============================
+# Verify email verification request is successful for a registered user
+
 def test_email_verification_valid(base_url):
     user = generate_user()
 
@@ -37,14 +36,12 @@ def test_email_verification_valid(base_url):
     assert response.status_code in [200, 201]
     validate_schema(body, email_request_success_schema)
 
-    # stronger validation
+    
     assert body["status"] == "success"
     assert isinstance(body["message"], str)
 
+# Attempt email verification request with an unregistered email (should return error response)
 
-# ==============================
-# 🔴 EMAIL VERIFICATION (UNREGISTERED)
-# ==============================
 def test_email_verification_unregistered(base_url):
     response = requests.post(
         f"{base_url}/auth/email-request",
@@ -59,14 +56,12 @@ def test_email_verification_unregistered(base_url):
     if response.status_code == 400:
         validate_schema(body, email_request_400_schema)
     else:
-        # fallback for 404
         assert "message" in body
         assert isinstance(body["message"], str)
 
 
-# ==============================
-# 🔴 EMAIL VERIFICATION (INVALID FORMAT)
-# ==============================
+# Attempt email verification request with invalid email format (should trigger validation error)
+
 def test_email_verification_invalid_format(base_url):
     response = requests.post(
         f"{base_url}/auth/email-request",

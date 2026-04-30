@@ -6,9 +6,8 @@ from schemas.audit_schema import audit_logs_schema
 from schemas.error_schema import error_401_schema, error_status_403_schema
 
 
-# =========================
-# ✅ SUCCESS — FETCH AUDIT LOGS
-# =========================
+# Retrieve audit logs with valid authentication token
+
 def test_get_audit_logs_success(base_url, auth_context):
     response = requests.get(
         f"{base_url}/users/{auth_context['user_id']}/login-audit",
@@ -26,9 +25,8 @@ def test_get_audit_logs_success(base_url, auth_context):
         assert response.status_code == 404
 
 
-# =========================
-# ❌ NO TOKEN
-# =========================
+# Attempt to retrieve audit logs without authentication token (should fail)
+
 def test_get_audit_logs_no_token(base_url, auth_context):
     response = requests.get(
         f"{base_url}/users/{auth_context['user_id']}/login-audit", timeout=10
@@ -43,9 +41,9 @@ def test_get_audit_logs_no_token(base_url, auth_context):
     else:
         validate_schema(body, error_status_403_schema) 
 
-# =========================
-# ❌ INVALID TOKEN
-# =========================
+
+# Attempt to retrieve audit logs with an invalid token (should return unauthorized/forbidden)
+
 def test_get_audit_logs_invalid_token(base_url, auth_context):
     token = generate_invalid_token()
 
@@ -67,9 +65,8 @@ def test_get_audit_logs_invalid_token(base_url, auth_context):
         validate_schema(body, error_status_403_schema)  # Assuming same schema for 403 for simplicity
 
 
-# =========================
-# ❌ MALFORMED TOKEN
-# =========================
+# Attempt to retrieve audit logs with a malformed token (should return unauthorized/forbidden)
+
 def test_get_audit_logs_malformed_token(base_url, auth_context):
     token = generate_malformed_token()
 
@@ -92,9 +89,8 @@ def test_get_audit_logs_malformed_token(base_url, auth_context):
         validate_schema(body, error_status_403_schema)  # Assuming same schema for 403 for simplicity
 
 
-# =========================
-# ⚠️ EDGE — MULTIPLE LOGINS GENERATE AUDIT DATA
-# =========================
+# Verify audit logs are generated after multiple login activities (edge case)
+
 def test_audit_logs_after_multiple_logins(base_url, auth_user):
     # simulate multiple logins
     for _ in range(3):
@@ -135,7 +131,6 @@ def test_audit_logs_after_multiple_logins(base_url, auth_user):
         if body["data"]:
             log = body["data"][0]
 
-            # explicit validation
             assert "id" in log
             assert isinstance(log["id"], str)
             assert "created_at" in log

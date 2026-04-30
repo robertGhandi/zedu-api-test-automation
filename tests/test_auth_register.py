@@ -8,9 +8,8 @@ from schemas.error_schema import error_400_schema, validation_error_schema
 TIMEOUT = 10
 
 
-# =========================
-# ✅ REGISTER SUCCESS
-# =========================
+# Verify successful user registration with valid input data
+
 def test_register_success(base_url):
     user = generate_user()
 
@@ -25,15 +24,14 @@ def test_register_success(base_url):
     assert response.status_code == 201
     validate_schema(body, register_success_schema)
 
-    # Explicit validation (strong assertions)
+    
     assert body["status"] == "success"
     assert body["status_code"] == 201
     assert isinstance(body["message"], str)
 
 
-# =========================
-# ❌ MISSING EMAIL
-# =========================
+# Attempt user registration with missing email field (should trigger validation error)
+
 def test_register_missing_email(base_url):
     user = generate_user()
     user.pop("email")
@@ -54,9 +52,8 @@ def test_register_missing_email(base_url):
         validate_schema(body, validation_error_schema)
 
 
-# =========================
-# ❌ INVALID EMAIL FORMAT
-# =========================
+# Attempt user registration with invalid email format (should fail validation)
+
 def test_register_invalid_email(base_url):
     user = generate_user()
     user["email"] = "invalid-email"
@@ -77,9 +74,8 @@ def test_register_invalid_email(base_url):
         validate_schema(body, validation_error_schema)
 
 
-# =========================
-# ❌ DUPLICATE EMAIL
-# =========================
+# Attempt user registration with an already registered email (should return conflict or error)
+
 def test_register_duplicate_email(base_url):
     user = generate_user()
 
@@ -105,14 +101,13 @@ def test_register_duplicate_email(base_url):
     if response.status_code == 400:
         validate_schema(body, error_400_schema)
     else:
-        # Stronger validation for 409
+        
         assert "message" in body
         assert isinstance(body["message"], str)
 
 
-# =========================
-# ⚠️ EDGE CASE — EMPTY PAYLOAD
-# =========================
+# Attempt user registration with empty request payload (edge case — should fail validation)
+
 def test_register_empty_payload(base_url):
     response = requests.post(
         f"{base_url}/auth/register",

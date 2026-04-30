@@ -13,9 +13,8 @@ from schemas.error_schema import (
 TIMEOUT = 10
 
 
-# ==============================
-# 🟢 ORGANISATIONS (VALID TOKEN)
-# ==============================
+# Verify organisations are successfully retrieved for an authenticated user
+
 def test_get_organisations_valid_token(base_url, auth_context):
     response = requests.get(
         f"{base_url}/users/organisations",
@@ -27,7 +26,6 @@ def test_get_organisations_valid_token(base_url, auth_context):
 
     assert response.status_code == 200
 
-    # ✅ Correct structure
     assert "data" in body
     assert isinstance(body["data"], list)
 
@@ -39,9 +37,8 @@ def test_get_organisations_valid_token(base_url, auth_context):
         assert "id" in org
 
 
-# ==============================
-# 🔴 ORGANISATIONS (NO TOKEN)
-# ==============================
+# Attempt to retrieve organisations without authentication token (should return unauthorized/forbidden)
+
 def test_get_organisations_no_token(base_url):
     response = requests.get(
         f"{base_url}/users/organisations",
@@ -58,9 +55,8 @@ def test_get_organisations_no_token(base_url):
         validate_schema(body, error_status_403_schema)
 
 
-# ==============================
-# 🔴 ORGANISATIONS (INVALID TOKEN)
-# ==============================
+# Attempt to retrieve organisations with an invalid token (should return unauthorized/forbidden)
+
 def test_get_organisations_invalid_token(base_url):
     response = requests.get(
         f"{base_url}/users/organisations",
@@ -81,9 +77,8 @@ def test_get_organisations_invalid_token(base_url):
         validate_schema(body, error_status_403_schema)
 
 
-# ==============================
-# 🟢 USER STATUS (VALID)
-# ==============================
+# Verify user status is successfully retrieved for an authenticated user
+
 def test_get_user_status_valid(base_url, auth_context):
     response = requests.get(
         f"{base_url}/users/{auth_context['user_id']}/status",
@@ -96,11 +91,10 @@ def test_get_user_status_valid(base_url, auth_context):
     assert response.status_code == 200
     validate_schema(body, user_status_success_schema)
 
-    # ✅ Correct structure
     assert body["status"] == "success"
     assert isinstance(body["data"], dict)
 
-    # explicit checks
+    
     assert "text" in body["data"]
     assert isinstance(body["data"]["text"], str)
 
@@ -108,9 +102,8 @@ def test_get_user_status_valid(base_url, auth_context):
     assert isinstance(body["data"]["visibility"], str)
 
 
-# ==============================
-# 🔴 USER STATUS (INVALID TOKEN)
-# ==============================
+# Attempt to retrieve user status with an invalid token (should return unauthorized/forbidden)
+
 def test_get_user_status_invalid_token(base_url, auth_context):
     response = requests.get(
         f"{base_url}/users/{auth_context['user_id']}/status",
@@ -131,9 +124,8 @@ def test_get_user_status_invalid_token(base_url, auth_context):
         validate_schema(body, error_status_403_schema)
 
 
-# ==============================
-# 🔴 USER STATUS (MALFORMED TOKEN)
-# ==============================
+# Attempt to retrieve user status with a malformed token (should return unauthorized/forbidden)
+
 def test_get_user_status_malformed_token(base_url, auth_context):
     response = requests.get(
         f"{base_url}/users/{auth_context['user_id']}/status",
