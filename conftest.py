@@ -2,9 +2,11 @@ import pytest
 import requests
 import os
 from dotenv import load_dotenv
+
 from utils.data_factory import generate_user
 from utils.validators import validate_schema
 from schemas.auth_schema import login_response_schema
+from utils.auth import login_user
 
 load_dotenv()
 
@@ -28,7 +30,8 @@ def auth_user(base_url):
 
     response = requests.post(
         f"{base_url}/auth/register",
-        json=user
+        json=user,
+        timeout=10
     )
 
     assert response.status_code == 201, f"Register failed: {response.text}"
@@ -41,19 +44,21 @@ def auth_user(base_url):
 # =========================
 @pytest.fixture
 def auth_context(base_url, auth_user):
-    response = requests.post(
-        f"{base_url}/auth/login",
-        json={
-            "email": auth_user["email"],
-            "password": auth_user["password"]
-        }
+    """
+    Provides authenticated user context:
+    - access_token
+    - user_id
+    - headers
+    """
+
+    # 🔥 Use reusable login utility
+    body = login_user(
+        base_url,
+        auth_user["email"],
+        auth_user["password"]
     )
 
-    body = response.json()
-
-    assert response.status_code == 200, f"Login failed: {body}"
-
-    # Schema validation (important upgrade)
+    # Schema validation
     validate_schema(body, login_response_schema)
 
     # Safe extraction
