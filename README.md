@@ -186,8 +186,6 @@ Create a `.env` file in the root directory:
 
 BASE_URL=https://api.zedu.chat/api/v1
 
-⚠️ Do NOT commit `.env` to GitHub.
-
 ---
 
 ## 5. Run Tests
