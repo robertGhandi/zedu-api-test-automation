@@ -1,7 +1,10 @@
+import os
+
 import requests
 from utils.data_factory import generate_user
 from utils.negative_factory import generate_unregistered_email
 from utils.validators import validate_schema
+from dotenv import load_dotenv  
 
 from schemas.email_schema import (
     email_request_success_schema,
@@ -10,7 +13,7 @@ from schemas.email_schema import (
 )
 
 TIMEOUT = 10
-
+load_dotenv()
 
 # Verify email verification request is successful for a registered user
 
@@ -65,7 +68,7 @@ def test_email_verification_unregistered(base_url):
 def test_email_verification_invalid_format(base_url):
     response = requests.post(
         f"{base_url}/auth/email-request",
-        json={"email": "invalid-email"},
+        json={"email": os.getenv("INVALID_EMAIL")},
         timeout=TIMEOUT
     )
 
