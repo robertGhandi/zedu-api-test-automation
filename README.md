@@ -1,8 +1,8 @@
 # 🧪 Zedu API Automation Framework (Pytest)
 
-A structured and scalable API automation testing framework built using Python (Pytest) for testing the Zedu platform APIs.
+A structured, scalable, and production-style API automation testing framework built using **Python (Pytest)** for testing the Zedu platform APIs.
 
-This project demonstrates authentication handling, positive/negative/edge case testing, dynamic test data generation, clean architecture, and reusable utilities.
+This project demonstrates **authentication handling, schema validation, dynamic test data generation, and full positive/negative/edge case coverage**.
 
 ---
 
@@ -10,98 +10,173 @@ This project demonstrates authentication handling, positive/negative/edge case t
 
 This framework automates REST API testing for the Zedu platform:
 
-- 🌐 Application: https://zedu.chat/
-- 📘 Swagger Docs: https://api.zedu.chat/swagger/#/
+* 🌐 Application: https://zedu.chat/
+* 📘 Swagger Docs: https://api.zedu.chat/swagger/#/
 
-It validates authentication, user operations, audit logs, and API error handling.
+It validates:
+
+* Authentication flows
+* User endpoints
+* Audit logs
+* Error handling
+* Edge case scenarios
 
 ---
 
 # ⚙️ Tech Stack
 
-- Python 3.10+
-- Pytest
-- Requests
-- python-dotenv
-- Faker
-- jsonschema
+* Python 3.10+
+* Pytest
+* Requests
+* python-dotenv
+* Faker
+* jsonschema
 
 ---
 
 # 📁 Project Structure
 
-project/  
-├── tests/  
-│   ├── test_auth_login.py  
-│   ├── test_users.py  
-│   ├── test_audit_logs.py  
-│  
-├── utils/  
-│   ├── data_factory.py  
-│   ├── negative_factory.py  
-│  
-├── conftest.py  
-├── requirements.txt  
-├── .env.example  
-└── README.md  
+project/
+├── tests/
+│   ├── test_auth_login.py
+│   ├── test_auth_register.py
+│   ├── test_users.py
+│   ├── test_audit_logs.py
+│   ├── test_magic_link.py
+│   ├── test_password_reset.py
+│   ├── test_email_verification.py
+│   ├── test_onboarding.py
+│   ├── test_edge_cases.py
+│
+├── utils/
+│   ├── data_factory.py
+│   ├── negative_factory.py
+│   ├── token_factory.py
+│   ├── validators.py
+│
+├── schemas/
+│   ├── auth_schema.py
+│   ├── user_schema.py
+│   ├── audit_schema.py
+│   ├── password_schema.py
+│   ├── error_schema.py
+│
+├── conftest.py
+├── requirements.txt
+├── .env.example
+└── README.md
 
 ---
 
 # 🚀 Features
 
-- Dynamic authentication (no hardcoded tokens)
-- Reusable fixtures for login and headers
-- Positive, negative, and edge test coverage
-- Fully independent and idempotent tests
-- Dynamic test data generation
-- Schema-ready response validation
-- Clean separation of test logic and utilities
+* 🔐 Dynamic authentication (no hardcoded tokens)
+* 🔁 Reusable fixtures for login and headers
+* 📊 JSON schema validation for all responses
+* ⚠️ Extensive negative testing
+* 🧪 Edge case coverage
+* 🔄 Fully independent and idempotent tests
+* 🎯 Dynamic test data generation (Faker + UUID)
+* 🧼 Clean and modular architecture
 
 ---
 
 # 🧪 Test Coverage
 
-## Authentication
-- Successful login
-- Invalid credentials
-- Unregistered email
-- Missing fields
-- Empty payload
+### ✅ Total Tests
 
-## Users
-- User profile retrieval
-- Status updates
-- Invalid user ID handling
+* ✔ 25+ automated test cases
+* ✔ 10+ negative tests
+* ✔ 5+ edge cases
 
-## Audit Logs
-- Authorized access
-- Unauthorized access
-- Invalid or malformed tokens
+---
+
+## 🔐 Authentication
+
+* Successful login
+* Invalid credentials
+* Unregistered email
+* Missing fields
+* Empty payload
+
+---
+
+## 👤 Users
+
+* Get organisations
+* Get user status
+* Invalid/malformed token handling
+
+---
+
+## 📜 Audit Logs
+
+* Authorized access
+* Unauthorized access
+* Multiple login activity validation
+
+---
+
+## 🔗 Magic Link
+
+* Valid email request
+* Invalid email format
+* Missing email
+* Unregistered email
+
+---
+
+## 🔑 Password Reset
+
+* Valid email reset
+* Invalid email format
+* Unregistered email
+
+---
+
+## 📧 Email Verification
+
+* Valid email request
+* Invalid format
+* Unregistered email
+
+---
+
+## ⚡ Edge Cases
+
+* Empty payload submission
+* Long username input
+* SQL injection attempt
+* Invalid data formats
 
 ---
 
 # 🛠️ Setup Instructions
 
 ## 1. Clone Repository
-git clone <repo-url>  
-cd <project-folder>  
+
+git clone https://github.com/robertGhandi/zedu-api-test-automation.git
+cd zedu-api-test-automation
 
 ---
 
 ## 2. Create Virtual Environment
 
 Windows:
-python -m venv venv  
-venv\Scripts\activate  
+python -m venv venv
+venv\Scripts\activate
 
 Mac/Linux:
-python3 -m venv venv  
-source venv/bin/activate  
+python3 -m venv venv
+source venv/bin/activate
 
 ---
 
 ## 3. Install Dependencies
-pip install -r requirements.txt  
+
+pip install -r requirements.txt
+
+(All dependencies are pinned for reproducibility)
 
 ---
 
@@ -109,93 +184,114 @@ pip install -r requirements.txt
 
 Create a `.env` file in the root directory:
 
-BASE_URL=https://api.zedu.chat  
+BASE_URL=https://api.zedu.chat/api/v1
 
-Do NOT commit `.env` to GitHub.
+⚠️ Do NOT commit `.env` to GitHub.
 
 ---
 
 ## 5. Run Tests
 
-Run all tests:
-pytest -s -v  
+Run full test suite:
 
-Run specific file:
-pytest tests/test_auth_login.py -s -v  
+pytest -s -v
 
----
+Run a specific test file:
 
-# 🧪 Testing Principles
-
-- Each test is independent
-- Tests are idempotent (can run multiple times safely)
-- No hardcoded tokens or credentials
-- All test data is dynamically generated
-- Clear and descriptive test naming
+pytest tests/test_users.py -s -v
 
 ---
 
 # 🔐 Authentication Flow
 
 1. User is dynamically generated
-2. User is registered via /auth/register
-3. User logs in via /auth/login
+2. User is registered via `/auth/register`
+3. User logs in via `/auth/login`
 4. Access token is extracted automatically
-5. Token is reused via fixtures
+5. Token is reused across tests via fixtures
 
 ---
 
 # 📦 Utilities
 
-## data_factory.py
+### data_factory.py
+
 Generates valid user data dynamically using Faker.
 
-## negative_factory.py
-Generates invalid test data such as:
-- Invalid emails
-- Weak passwords
-- Unregistered users
-- Malformed tokens
+### negative_factory.py
+
+Generates invalid test inputs:
+
+* Invalid emails
+* Missing fields
+* Unregistered users
+
+### token_factory.py
+
+Generates invalid and malformed tokens for negative testing.
+
+### validators.py
+
+Handles JSON schema validation using `jsonschema`.
+
+---
+
+# 🧪 Schema Validation
+
+All API responses are validated using JSON schemas:
+
+* Success responses
+* Error responses (400, 401, 422)
+* Nested and complex response structures
+
+This ensures:
+
+* Field presence
+* Data types
+* Response consistency
 
 ---
 
 # ⚠️ Important Notes
 
-- Ensure BASE_URL is correctly set in .env
-- Run tests from project root directory
-- API must be accessible for tests to pass
+* Ensure `BASE_URL` is correctly set in `.env`
+* Run tests from the project root directory
+* API must be accessible for tests to pass
 
 ---
 
 # 🧼 Code Quality
 
-- Modular architecture
-- Reusable components
-- Clean separation of concerns
-- Scalable test design
-- Maintainable structure
+* Modular and maintainable structure
+* Reusable utilities and fixtures
+* Clear naming conventions
+* Separation of concerns
+* Scalable design
 
 ---
 
 # 📌 How to Extend
 
-- Add new tests in /tests
-- Add new data generators in /utils
-- Add schema validation in /schemas
-- Expand negative and edge coverage
+* Add new tests in `/tests`
+* Add new schemas in `/schemas`
+* Add new data generators in `/utils`
+* Expand negative and edge case coverage
 
 ---
 
 # 🏁 Summary
 
 This framework is designed to be:
-- Easy to clone
-- Easy to run
-- Easy to extend
-- Production-style structured
+
+* Easy to clone
+* Easy to run
+* Easy to extend
+* Fully reproducible
+* Production-style structured
 
 ---
 
 # 👨‍💻 Author
 
-API Automation Project – Stage 3 Submission
+Robert Ghandi
+HNG API Automation Stage 3 Submission
