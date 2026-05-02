@@ -1,5 +1,7 @@
 # 🧪 Zedu API Automation Framework (Pytest)
 
+![CI](https://github.com/robertGhandi/zedu-api-test-automation/actions/workflows/ci.yml/badge.svg)
+
 A structured, scalable, and production-style API automation testing framework built using **Python (Pytest)** for testing the Zedu platform APIs.
 
 This project demonstrates **authentication handling, schema validation, dynamic test data generation, and full positive/negative/edge case coverage**.
@@ -175,6 +177,11 @@ Mac/Linux:
 python3 -m venv venv
 source venv/bin/activate
 
+Git Bash
+python -m venv venv
+
+source venv/Scripts/activate
+
 ---
 
 ## 3. Install Dependencies
@@ -254,6 +261,34 @@ This ensures:
 * Response consistency
 
 ---
+
+---
+
+# 🔁 CI Pipeline
+
+This project uses **GitHub Actions** to automatically run tests on every push and pull request, ensuring continuous validation and fast feedback.
+
+## 🚀 Pipeline Steps
+
+- Install project dependencies  
+- Configure environment variables (`.env`)  
+- Execute the full test suite using Pytest  
+- Generate test report (JUnit XML format)  
+
+## ❌ Failure Handling
+
+- If any test fails, the pipeline fails automatically  
+- Errors are clearly displayed in CI logs  
+- No test failures are suppressed  
+
+---
+
+## 📊 Test Reporting
+
+The CI pipeline generates a JUnit XML report for each test run:
+
+```bash
+pytest -s -v --junitxml=report.xml
 
 # ⚠️ Important Notes
 
