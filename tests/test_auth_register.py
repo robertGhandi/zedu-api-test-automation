@@ -1,10 +1,13 @@
+import os
+
 import requests
 from utils.data_factory import generate_user
 from utils.validators import validate_schema
 
 from schemas.auth_schema import register_success_schema
 from schemas.error_schema import error_400_schema, validation_error_schema
-
+from dotenv import load_dotenv
+load_dotenv()
 TIMEOUT = 10
 
 
@@ -56,7 +59,7 @@ def test_register_missing_email(base_url):
 
 def test_register_invalid_email(base_url):
     user = generate_user()
-    user["email"] = "invalid-email"
+    user["email"] = os.getenv("INVALID_EMAIL")
 
     response = requests.post(
         f"{base_url}/auth/register",
