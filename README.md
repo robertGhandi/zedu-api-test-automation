@@ -68,7 +68,6 @@ project/
 │
 ├── conftest.py
 ├── requirements.txt
-├── .env
 ├── .env.example
 └── README.md
 
@@ -76,14 +75,14 @@ project/
 
 # 🚀 Features
 
-* 🔐 Dynamic authentication (no hardcoded tokens)
-* 🔁 Reusable fixtures for login and headers
-* 📊 JSON schema validation for all responses
-* ⚠️ Extensive negative testing
-* 🧪 Edge case coverage
-* 🔄 Fully independent and idempotent tests
-* 🎯 Dynamic test data generation (Faker + UUID)
-* 🧼 Clean and modular architecture
+* Dynamic authentication (no hardcoded tokens)
+* Reusable fixtures for login and headers
+* JSON schema validation for all responses
+* Extensive negative testing
+* Edge case coverage
+* Fully independent and idempotent tests
+* Dynamic test data generation (Faker + UUID)
+* Clean and modular architecture
 
 ---
 
@@ -308,7 +307,7 @@ pytest -s -v --junitxml=report.xml
 
 ---
 
-# 📌 How to Extend
+#  How to Extend
 
 * Add new tests in `/tests`
 * Add new schemas in `/schemas`
