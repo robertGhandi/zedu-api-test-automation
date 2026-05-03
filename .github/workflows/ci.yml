@@ -34,6 +34,7 @@ jobs:
           pytest -s -v --junitxml=report.xml
 
       - name: Upload test report (artifact)
+        if: always()  # Ensure this step runs even if the tests fail
         uses: actions/upload-artifact@v4
         with:
           name: junit-report
