@@ -38,6 +38,7 @@ It validates:
 
 # 📁 Project Structure
 
+```
 project/
 ├── tests/
 │   ├── test_auth_login.py
@@ -71,6 +72,7 @@ project/
 ├── .env.example
 └── README.md
 
+```
 ---
 
 # 🚀 Features
@@ -159,15 +161,16 @@ project/
 # 🛠️ Setup Instructions
 
 ## 1. Clone Repository
-
+```
 git clone https://github.com/robertGhandi/zedu-api-test-automation.git
 cd zedu-api-test-automation
 
 ps - git should be installed, VS code or any IDE
+```
 ---
 
 ## 2. Create Virtual Environment
-
+```
 Windows:
 python -m venv venv
 venv\Scripts\activate
@@ -180,7 +183,7 @@ Git Bash
 python -m venv venv
 
 source venv/Scripts/activate
-
+```
 ---
 
 ## 3. Install Dependencies
