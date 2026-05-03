@@ -134,3 +134,4 @@ def test_audit_logs_after_multiple_logins(base_url, auth_user):
             assert "id" in log
             assert isinstance(log["id"], str)
             assert "created_at" in log
+            assert False
