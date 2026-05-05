@@ -1,42 +1,42 @@
-# 🧪 Zedu API Automation Framework (Pytest)
+# Zedu API Automation Framework (Pytest)
 
 ![CI](https://github.com/robertGhandi/zedu-api-test-automation/actions/workflows/ci.yml/badge.svg)
 
 A structured, scalable, and production-style API automation testing framework built using **Python (Pytest)** for testing the Zedu platform APIs.
 
-This project demonstrates **authentication handling, schema validation, dynamic test data generation, and full positive/negative/edge case coverage**.
+This project demonstrates authentication handling, schema validation, dynamic test data generation, and full positive, negative, and edge case coverage.
 
 ---
 
-# 📌 Project Overview
+## Project Overview
 
 This framework automates REST API testing for the Zedu platform:
 
-* 🌐 Application: https://zedu.chat/
-* 📘 Swagger Docs: https://api.zedu.chat/swagger/#/
+- Application: https://zedu.chat/  
+- Swagger Docs: https://api.zedu.chat/swagger/#/  
 
 It validates:
 
-* Authentication flows
-* User endpoints
-* Audit logs
-* Error handling
-* Edge case scenarios
+- Authentication flows  
+- User endpoints  
+- Audit logs  
+- Error handling  
+- Edge case scenarios  
 
 ---
 
-# ⚙️ Tech Stack
+## Tech Stack
 
-* Python 3.10+
-* Pytest
-* Requests
-* python-dotenv
-* Faker
-* jsonschema
+- Python 3.10+  
+- Pytest  
+- Requests  
+- python-dotenv  
+- Faker  
+- jsonschema  
 
 ---
 
-# 📁 Project Structure
+## Project Structure
 
 ```
 project/
@@ -71,267 +71,266 @@ project/
 ├── requirements.txt
 ├── .env.example
 └── README.md
-
 ```
----
-
-# 🚀 Features
-
-* Dynamic authentication (no hardcoded tokens)
-* Reusable fixtures for login and headers
-* JSON schema validation for all responses
-* Extensive negative testing
-* Edge case coverage
-* Fully independent and idempotent tests
-* Dynamic test data generation (Faker + UUID)
-* Clean and modular architecture
 
 ---
 
-# 🧪 Test Coverage
+## Features
 
-### ✅ Total Tests
-
-* ✔ 25+ automated test cases
-* ✔ 10+ negative tests
-* ✔ 5+ edge cases
-
----
-
-## 🔐 Authentication
-
-* Successful login
-* Invalid credentials
-* Unregistered email
-* Missing fields
-* Empty payload
+- Dynamic authentication (no hardcoded tokens)  
+- Reusable fixtures for login and headers  
+- JSON schema validation for API responses  
+- Extensive negative testing  
+- Edge case coverage  
+- Fully independent and idempotent tests  
+- Dynamic test data generation (Faker + UUID)  
+- Clean and modular architecture  
 
 ---
 
-## 👤 Users
+## Test Coverage
 
-* Get organisations
-* Get user status
-* Invalid/malformed token handling
+- 25+ automated test cases  
+- 10+ negative test scenarios  
+- 5+ edge case validations  
 
----
+### Authentication
+- Successful login  
+- Invalid credentials  
+- Unregistered email  
+- Missing fields  
+- Empty payload  
 
-## 📜 Audit Logs
+### Users
+- Retrieve organisations  
+- Retrieve user status  
+- Invalid and malformed token handling  
 
-* Authorized access
-* Unauthorized access
-* Multiple login activity validation
+### Audit Logs
+- Authorized access  
+- Unauthorized access  
+- Multiple login activity validation  
 
----
+### Magic Link
+- Valid email request  
+- Invalid email format  
+- Missing email  
+- Unregistered email  
 
-## 🔗 Magic Link
+### Password Reset
+- Valid email reset  
+- Invalid email format  
+- Unregistered email  
 
-* Valid email request
-* Invalid email format
-* Missing email
-* Unregistered email
+### Email Verification
+- Valid email request  
+- Invalid format  
+- Unregistered email  
 
----
-
-## 🔑 Password Reset
-
-* Valid email reset
-* Invalid email format
-* Unregistered email
-
----
-
-## 📧 Email Verification
-
-* Valid email request
-* Invalid format
-* Unregistered email
-
----
-
-## ⚡ Edge Cases
-
-* Empty payload submission
-* Long username input
-* SQL injection attempt
-* Invalid data formats
+### Edge Cases
+- Empty payload submission  
+- Long username input  
+- SQL injection attempt  
+- Invalid data formats  
 
 ---
 
-# 🛠️ Setup Instructions
+## Setup Instructions
 
-## 1. Clone Repository
-```
+### 1. Clone Repository
+
+```bash
 git clone https://github.com/robertGhandi/zedu-api-test-automation.git
 cd zedu-api-test-automation
-
-ps - git should be installed, VS code or any IDE
 ```
+
 ---
 
-## 2. Create Virtual Environment
-```
-Windows:
+### 2. Create Virtual Environment
+
+#### Windows (CMD / PowerShell)
+
+```bash
 python -m venv venv
 venv\Scripts\activate
+```
 
-Mac/Linux:
+#### macOS / Linux
+
+```bash
 python3 -m venv venv
 source venv/bin/activate
+```
 
-Git Bash
+#### Git Bash
+
+```bash
 python -m venv venv
-
 source venv/Scripts/activate
 ```
+
 ---
 
-## 3. Install Dependencies
+### 3. Install Dependencies
 
+```bash
 pip install -r requirements.txt
-
-(All dependencies are pinned for reproducibility)
+```
 
 ---
 
-## 4. Environment Setup
+### 4. Configure Environment Variables
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the project root directory:
 
+```env
 BASE_URL=https://api.zedu.chat/api/v1
+INVALID_EMAIL=invalid-email
+DEFAULT_PASSWORD=Password123!
+WRONG_PASSWORD=WrongPassword123!
+```
 
 ---
 
-## 5. Run Tests
+## Environment Variables
+
+The following environment variables are required:
+
+- BASE_URL → API base URL  
+- INVALID_EMAIL → used for negative test scenarios  
+- DEFAULT_PASSWORD → used for valid login tests  
+- WRONG_PASSWORD → used for invalid login scenarios  
+
+These variables are configured locally via `.env` and recreated dynamically in the CI pipeline.
+
+---
+
+### 5. Run Tests
 
 Run full test suite:
 
+```bash
 pytest -s -v
+```
 
 Run a specific test file:
 
+```bash
 pytest tests/test_users.py -s -v
+```
+
+Generate reports:
+
+```bash
+pytest -s -v --html=report.html
+pytest -s -v --junitxml=report.xml
+```
 
 ---
 
-# 🔐 Authentication Flow
+## Authentication Flow
 
-1. User is dynamically generated
-2. User is registered via `/auth/register`
-3. User logs in via `/auth/login`
-4. Access token is extracted automatically
-5. Token is reused across tests via fixtures
-
----
-
-# 📦 Utilities
-
-### data_factory.py
-
-Generates valid user data dynamically using Faker.
-
-### negative_factory.py
-
-Generates invalid test inputs:
-
-* Invalid emails
-* Missing fields
-* Unregistered users
-
-### token_factory.py
-
-Generates invalid and malformed tokens for negative testing.
-
-### validators.py
-
-Handles JSON schema validation using `jsonschema`.
+1. A user is dynamically generated  
+2. The user is registered via `/auth/register`  
+3. The user logs in via `/auth/login`  
+4. An access token is extracted  
+5. The token is reused across tests via fixtures  
 
 ---
 
-# 🧪 Schema Validation
+## Utilities
 
-All API responses are validated using JSON schemas:
-
-* Success responses
-* Error responses (400, 401, 422)
-* Nested and complex response structures
-
-This ensures:
-
-* Field presence
-* Data types
-* Response consistency
+- `data_factory.py` → Generates valid user data using Faker  
+- `negative_factory.py` → Generates invalid test inputs  
+- `token_factory.py` → Generates invalid and malformed tokens  
+- `validators.py` → Performs JSON schema validation  
 
 ---
 
+## Schema Validation
+
+All API responses are validated against JSON schemas to ensure:
+
+- Field presence  
+- Data type correctness  
+- Response consistency  
+
 ---
 
-# 🔁 CI Pipeline
+## CI Pipeline
 
-This project uses **GitHub Actions** to automatically run tests on every push and pull request, ensuring continuous validation and fast feedback.
+This project uses GitHub Actions to automatically run tests on every push and pull request.
 
-## 🚀 Pipeline Steps
+### How the CI Pipeline Works
 
-- Install project dependencies  
-- Configure environment variables (`.env`)  
-- Execute the full test suite using Pytest  
-- Generate test report (JUnit XML format)  
+The pipeline is triggered automatically on:
 
-## ❌ Failure Handling
+- Push to any branch  
+- Pull request creation or update  
+
+For every run:
+
+1. A clean environment is created  
+2. Python is installed  
+3. Dependencies are installed  
+4. Environment variables are configured  
+5. The full test suite is executed  
+6. A test report is generated  
+
+---
+
+### Failure Handling
 
 - If any test fails, the pipeline fails automatically  
-- Errors are clearly displayed in CI logs  
-- No test failures are suppressed  
+- Errors are clearly visible in CI logs  
+- No failures are suppressed  
 
 ---
 
-## 📊 Test Reporting
+## Test Reporting
 
-The CI pipeline generates a JUnit XML report for each test run:
+A JUnit XML report is generated in CI:
 
 ```bash
 pytest -s -v --junitxml=report.xml
+```
 
-# ⚠️ Important Notes
-
-* Ensure `BASE_URL` is correctly set in `.env`
-* Run tests from the project root directory
-* API must be accessible for tests to pass
+The report is uploaded as an artifact in GitHub Actions.
 
 ---
 
-# 🧼 Code Quality
+## Code Quality
 
-* Modular and maintainable structure
-* Reusable utilities and fixtures
-* Clear naming conventions
-* Separation of concerns
-* Scalable design
-
----
-
-#  How to Extend
-
-* Add new tests in `/tests`
-* Add new schemas in `/schemas`
-* Add new data generators in `/utils`
-* Expand negative and edge case coverage
+- Modular and maintainable structure  
+- Reusable utilities and fixtures  
+- Clear naming conventions  
+- Separation of concerns  
+- Scalable design  
 
 ---
 
-# 🏁 Summary
+## How to Extend
+
+- Add new tests in `/tests`  
+- Add new schemas in `/schemas`  
+- Add new data generators in `/utils`  
+- Expand negative and edge case coverage  
+
+---
+
+## Summary
 
 This framework is designed to be:
 
-* Easy to clone
-* Easy to run
-* Easy to extend
-* Fully reproducible
-* Production-style structured
+- Easy to clone  
+- Easy to run  
+- Easy to extend  
+- Fully reproducible  
+- Structured like a production-grade automation project  
 
 ---
 
-# 👨‍💻 Author
+## Author
 
-Robert Ghandi
-HNG API Automation Stage 3 Submission
+Robert Ghandi  
+API Automation Project
