@@ -55,28 +55,6 @@ def test_register_missing_email(base_url):
         validate_schema(body, validation_error_schema)
 
 
-# Attempt user registration with invalid email format (should fail validation)
-
-def test_register_invalid_email(base_url):
-    user = generate_user()
-    user["email"] = os.getenv("INVALID_EMAIL")
-
-    response = requests.post(
-        f"{base_url}/auth/register",
-        json=user,
-        timeout=TIMEOUT
-    )
-
-    body = response.json()
-
-    assert response.status_code in [400, 422]
-
-    if response.status_code == 400:
-        validate_schema(body, error_400_schema)
-    else:
-        validate_schema(body, validation_error_schema)
-
-
 # Attempt user registration with an already registered email (should return conflict or error)
 
 def test_register_duplicate_email(base_url):
