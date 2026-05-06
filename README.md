@@ -205,6 +205,118 @@ These variables are configured locally via `.env` and recreated dynamically in t
 
 ---
 
+---
+
+## Contract Testing
+
+In addition to functional API testing, this project includes dedicated contract tests.
+
+Contract tests validate whether the actual API implementation matches the documented API specification (Swagger/OpenAPI).
+
+These tests are intentionally separated from functional tests because some documented responses do not currently match real API behavior.
+
+Example:
+- Swagger documentation may specify `422 Unprocessable Entity`
+- Actual API implementation may return `400 Bad Request`
+
+This separation allows:
+- Stable CI pipelines
+- Continuous validation of real API behavior
+- Detection of API contract inconsistencies
+
+---
+
+## Running Contract Tests
+
+Run only contract tests:
+
+```bash
+pytest tests/contract -s -v
+```
+
+Run tests using pytest markers:
+
+```bash
+pytest -m contract -s -v
+```
+
+Run all tests except contract tests:
+
+```bash
+pytest -m "not contract" -s -v
+```
+
+---
+
+## Pytest Markers
+
+This project uses custom pytest markers to separate test categories.
+
+Registered marker:
+
+```ini
+[pytest]
+markers =
+    contract: strict API contract tests
+```
+
+Contract tests are marked using:
+
+```python
+@pytest.mark.contract
+```
+
+---
+
+## CI Workflow Architecture
+
+The GitHub Actions workflow is divided into separate jobs:
+
+### Functional Tests
+- Executes production-behavior tests
+- Fails the pipeline if tests fail
+- Generates JUnit XML reports
+- Used as the primary CI validation layer
+
+### Contract Tests
+- Executes strict API specification validation
+- Runs automatically on push and pull request
+- Uses `continue-on-error: true`
+- Does not block the pipeline
+- Highlights documentation inconsistencies
+
+This structure ensures CI stability while still validating API contract compliance.
+
+---
+
+## Concurrency Handling
+
+The CI pipeline uses GitHub Actions concurrency control:
+
+```yaml
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+```
+
+This prevents duplicate workflow executions by automatically cancelling outdated runs when new commits are pushed.
+
+---
+
+## Known API Inconsistencies
+
+Some API responses differ from the Swagger/OpenAPI documentation.
+
+Examples include:
+- Validation errors returning `400` instead of documented `422`
+
+These inconsistencies are:
+- documented in dedicated contract tests
+- isolated from functional CI validation
+- tracked as API specification mismatches
+
+---
+
 ### 5. Run Tests
 
 Run full test suite:
